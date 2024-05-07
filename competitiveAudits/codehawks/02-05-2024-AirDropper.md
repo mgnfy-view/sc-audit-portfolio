@@ -23,7 +23,7 @@
 Stood 5th out of a total of 54 participants.
 
 ### Number of findings:
-   - High: 4
+   - High: 3
    - Medium: 0
    - Low: 0
 
