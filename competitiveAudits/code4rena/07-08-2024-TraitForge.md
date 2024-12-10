@@ -1,4 +1,4 @@
-# TempleGold - Findings Report
+# TraitForge - Findings Report
 
 # Table of contents
 
