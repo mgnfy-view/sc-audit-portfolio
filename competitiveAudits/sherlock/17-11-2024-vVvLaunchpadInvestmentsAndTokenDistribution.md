@@ -5,7 +5,7 @@
 - ## [Contest Summary](#contest-summary)
 - ## [Results Summary](#results-summary)
 - ## High Risk Findings
-    - ### [H-01. Smart contracts (and account abstraction wallets) can neither perform cross-chain TGLD transfers nor participate in cross-chain auctions](#H-01)
+    - ### [H-01. Anyone can steal an eligible KYC'ed user's claim amount in `VVVVCTokenDistributor.sol`](#H-01)
 
 # <a id='contest-summary'></a>Contest Summary
 
@@ -53,9 +53,11 @@ The claim needs to occur on Ethereum Mainnet where transactions are collected in
 
 The eligible KYC'ed user loses all his claim amount.
 
-PoC
+## PoC
+
 Add the following test case to vvv-platform-smart-contracts/test/vc/VVVVCTokenDistributor.unit.t.sol,
 
+```js
     function testAnyoneCanStealAKYCedUsersClaimTokens() public {
         address[] memory thisProjectTokenProxyWallets = new address[](1);
         uint256[] memory thisTokenAmountsToClaim = new uint256[](1);
@@ -74,14 +76,21 @@ Add the following test case to vvv-platform-smart-contracts/test/vc/VVVVCTokenDi
         // The malicious user essentially stole the KYC'ed users claim
         assertTrue(ProjectTokenInstance.balanceOf(maliciousUser) == claimAmount);
     }
+```
+
 The test passes,
 
+```shell
 Ran 1 test for test/vc/VVVVCTokenDistributor.unit.t.sol:VVVVCTokenDistributorUnitTests
 [PASS] testAnyoneCanStealAKYCedUsersClaimTokens() (gas: 122037)
 Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 5.01ms (1.40ms CPU time)
-Mitigation
+```
+
+## Mitigation
+
 Make the following change to the VVVVCTokenDistributor::claim() function,
 
+```diff
     function claim(ClaimParams memory _params) public {
         // Code here...
 
@@ -98,4 +107,6 @@ Make the following change to the VVVVCTokenDistributor::claim() function,
 
         // More code here...
     }
+```
+
 This transfers the tokens to the KYC address instead of the sender of the transaction.
